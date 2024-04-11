@@ -1,0 +1,48 @@
+# Dependency directories
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build files
+/build/
+.DS_Store
+.env
+
+# IDE files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Dependency directories
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+# Bower dependency directory (https://bower.io/)
+bower_components
+
+# SFTP configuration file
+.sftpCache
+
+# Compiled binary addons (https://github.com/nodejs/node-gyp)
+build/Release
