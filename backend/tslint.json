@@ -11,6 +11,9 @@
         "no-console": [
             true,
             "warning"
+        ],
+        "no-var-requires": [
+            false
         ]
     },
     "rulesDirectory": []
