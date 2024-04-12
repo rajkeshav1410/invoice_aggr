@@ -5,6 +5,7 @@ yarn-error.log
 
 # Build files
 /build/
+/backend/dist/
 .DS_Store
 .env
 
