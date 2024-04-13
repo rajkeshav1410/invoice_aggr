@@ -13,3 +13,81 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Enterprise {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  address   String
+  gstin     String
+  legend    Legend[]
+  work      Work[]
+  createdBy User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Legend {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  enterprise   Enterprise @relation(fields: [enterpriseId], references: [id])
+  enterpriseId String     @db.ObjectId
+  invoice      String
+  invoiceDate  DateTime
+  purchase     Purchase
+  Work         Work       @relation(fields: [workId], references: [id])
+  workId       String     @db.ObjectId
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Work {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  title       String     @unique
+  description String?
+  party       Enterprise @relation(fields: [partyId], references: [id])
+  partyId     String     @db.ObjectId
+  period      DateTime
+  author      User       @relation(fields: [authorId], references: [id])
+  authorId    String     @db.ObjectId
+  legends     Legend[]
+  workItem    WorkItem[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model WorkItem {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  work      Work     @relation(fields: [workId], references: [id])
+  workId    String   @db.ObjectId
+  role      Role     @default(ADMIN)
+  User      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id         String       @id @default(auto()) @map("_id") @db.ObjectId
+  username   String       @unique
+  name       String?
+  email      String       @unique
+  password   String
+  workItems  WorkItem[]
+  work       Work[]
+  Enterprise Enterprise[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+type Purchase {
+  p18 Float
+  p12 Float
+  p5  Float
+  p0  Float
+}
+
+enum Role {
+  ADMIN
+  OWNER
+  COLLABORATOR
+  VIEWER
+}
