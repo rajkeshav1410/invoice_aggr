@@ -5,11 +5,11 @@ import jwt from "jsonwebtoken";
 import { User } from "@prisma/client";
 import prisma from "../database";
 import withErrorHandling from "../middlewares/handleAsync";
-import { LoginRequest, SignupRequest } from "../models/auth.model";
+import { LoginRequest, LoginRequestSchema, SignupRequest, SignupRequestSchema } from "../models/auth.model";
 
 const login = withErrorHandling(
   async (req: Request, res: Response, next: NextFunction) => {
-    const loginRequest: LoginRequest = req.body;
+    const loginRequest: LoginRequest = LoginRequestSchema.parse(req.body);
     const existingUser = await prisma.user.findFirst({
       where: {
         email: loginRequest.email,
@@ -38,7 +38,7 @@ const login = withErrorHandling(
 
 const signup = withErrorHandling(
   async (req: Request, res: Response, next: NextFunction) => {
-    const signupRequest: SignupRequest = req.body;
+    const signupRequest: SignupRequest = SignupRequestSchema.parse(req.body);
     const existingUser = await prisma.user.findFirst({
       where: {
         email: signupRequest.email,

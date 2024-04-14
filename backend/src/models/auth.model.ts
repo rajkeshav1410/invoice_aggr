@@ -1,12 +1,23 @@
-type SignupRequest = {
-  email: string;
-  password: string;
-};
+import { z } from "zod";
 
-type LoginRequest = {
-  email: string;
-  password: string;
-};
+const SignupRequestSchema = z.object({
+  email: z.string().email(),
+  password: z
+    .string()
+    .min(6)
+    .regex(
+      /^(?=.*[A-Z])(?=.*[!@#$%^&*()-_=+\\|[\]{};:'",.<>/?])(?=.*[0-9]).{6,}$/
+    ),
+});
+
+type SignupRequest = z.infer<typeof SignupRequestSchema>;
+
+const LoginRequestSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+});
+
+type LoginRequest = z.infer<typeof LoginRequestSchema>;
 
 type JwtPayload = {
   id: string;
@@ -17,4 +28,10 @@ type JwtPayload = {
   exp: number;
 };
 
-export { SignupRequest, LoginRequest, JwtPayload };
+export {
+  SignupRequestSchema,
+  SignupRequest,
+  LoginRequestSchema,
+  LoginRequest,
+  JwtPayload,
+};

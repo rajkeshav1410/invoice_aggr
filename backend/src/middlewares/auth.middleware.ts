@@ -3,12 +3,12 @@ import { StatusCodes } from "http-status-codes";
 import jwt from "jsonwebtoken";
 import { JwtPayload } from "../models/auth.model";
 import prisma from "../database";
-import { User } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: User;
+      user: User;
     }
   }
 }
@@ -65,4 +65,15 @@ const authenticate = async (
   }
 };
 
-export { authenticate };
+const isAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  if (req.user && req.user.role == Role.ADMIN) {
+    next();
+  } else {
+    return next({
+      message: "You do not have permission to access this route",
+      statusCode: StatusCodes.FORBIDDEN,
+    });
+  }
+};
+
+export { authenticate, isAdmin };

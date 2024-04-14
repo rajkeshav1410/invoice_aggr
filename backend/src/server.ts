@@ -3,10 +3,11 @@ require("dotenv").config();
 import cors, { CorsOptions } from "cors";
 import express, { Application } from "express";
 import cookieParser from "cookie-parser";
-const userRoute = require("./routes/user.route");
-const authRoute = require("./routes/auth.route");
 const errorHandler = require("./middlewares/handleError");
 const swaggerFile = require("../dist/swagger_output.json");
+const userRoute = require("./routes/user.route");
+const authRoute = require("./routes/auth.route");
+const enterpriseRoute = require("./routes/enterprise.route");
 
 const app: Application = express();
 const swaggerUi = require("swagger-ui-express");
@@ -25,6 +26,7 @@ app.use(cookieParser());
 
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/enterprise", enterpriseRoute);
 
 app.use(errorHandler);
 
