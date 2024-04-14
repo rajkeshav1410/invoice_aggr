@@ -58,7 +58,7 @@ model WorkItem {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   work      Work     @relation(fields: [workId], references: [id])
   workId    String   @db.ObjectId
-  role      Role     @default(ADMIN)
+  access    Access   @default(OWNER)
   User      User     @relation(fields: [userId], references: [id])
   userId    String   @db.ObjectId
   createdAt DateTime @default(now())
@@ -67,10 +67,10 @@ model WorkItem {
 
 model User {
   id         String       @id @default(auto()) @map("_id") @db.ObjectId
-  username   String       @unique
   name       String?
   email      String       @unique
   password   String
+  role       Role         @default(USER)
   workItems  WorkItem[]
   work       Work[]
   Enterprise Enterprise[]
@@ -87,6 +87,10 @@ type Purchase {
 
 enum Role {
   ADMIN
+  USER
+}
+
+enum Access {
   OWNER
   COLLABORATOR
   VIEWER

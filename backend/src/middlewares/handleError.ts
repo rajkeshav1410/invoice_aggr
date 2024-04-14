@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
+import { ErrorHandle } from "../models/error.model";
 
-const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+const errorHandler = (err: ErrorHandle, req: Request, res: Response, next: NextFunction) => {
   const message = err.message || "Internal Server Error";
   const statusCode = err.statusCode || 500;
 

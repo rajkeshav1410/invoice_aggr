@@ -1,8 +1,10 @@
 require("dotenv").config();
 
 import cors, { CorsOptions } from "cors";
-import express, { Application, Request, Response } from "express";
+import express, { Application } from "express";
+import cookieParser from "cookie-parser";
 const userRoute = require("./routes/user.route");
+const authRoute = require("./routes/auth.route");
 const errorHandler = require("./middlewares/handleError");
 const swaggerFile = require("../dist/swagger_output.json");
 
@@ -11,21 +13,20 @@ const swaggerUi = require("swagger-ui-express");
 const url = `${process.env.BASE_URL}:${process.env.PORT}`;
 
 const corsOptions: CorsOptions = {
-  origin: url,
+  origin: '*',
 };
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
+app.set("trust proxy", true);
 app.use(express.json());
 app.use(cors(corsOptions));
-app.use(errorHandler);
+app.use(cookieParser());
 
 app.use("/api/v1/user", userRoute);
+app.use("/api/v1/auth", authRoute);
 
-
-// app.get("/", (req: Request, res: Response) => {
-//   res.send("Welcome to Invoice_aggr");
-// });
+app.use(errorHandler);
 
 // start the server
 app.listen(
