@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "@prisma/client";
-import prisma from "../database";
+import prisma from "../common/database";
 import withErrorHandling from "../middlewares/handleAsync";
 import { LoginRequest, LoginRequestSchema, SignupRequest, SignupRequestSchema } from "../models/auth.model";
 

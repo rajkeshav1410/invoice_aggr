@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import jwt from "jsonwebtoken";
 import { JwtPayload } from "../models/auth.model";
-import prisma from "../database";
+import prisma from "../common/database";
 import { Role, User } from "@prisma/client";
 
 declare global {

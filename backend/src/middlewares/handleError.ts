@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { ErrorHandle } from "../models/error.model";
 import { ZodError } from "zod";
+import logger from "../common/logger";
+import { getReasonPhrase } from "http-status-codes";
 
 const errorHandler = (
   err: ErrorHandle,
@@ -10,6 +12,7 @@ const errorHandler = (
 ) => {
   const message = err.message || "Internal Server Error";
   let statusCode = err.statusCode || 500;
+  logger.error(`${statusCode} ${getReasonPhrase(statusCode)} | ${message}`);
 
   // Handle Zod validation errors
   if (err instanceof ZodError) {

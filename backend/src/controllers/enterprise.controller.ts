@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import withErrorHandling from "../middlewares/handleAsync";
-import prisma from "../database";
+import prisma from "../common/database";
 import { StatusCodes } from "http-status-codes";
 import { EnterpriseCreateRequest, EnterpriseCreateSchema } from "../models/enterprise.model";
 
@@ -16,7 +16,7 @@ const createEnterprise = withErrorHandling(
     if (existingEnterprise)
       return next({
         message: `Enterprise with GSTIN ${existingEnterprise.gstin} already exists`,
-        StatusCode: StatusCodes.CONFLICT,
+        statusCode: StatusCodes.CONFLICT,
       });
 
     const { id, ...newEnterprise } = await prisma.enterprise.create({

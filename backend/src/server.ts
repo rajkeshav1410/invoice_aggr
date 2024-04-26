@@ -3,6 +3,7 @@ require("dotenv").config();
 import cors, { CorsOptions } from "cors";
 import express, { Application } from "express";
 import cookieParser from "cookie-parser";
+import apiLogger from "./middlewares/logger.middleware";
 const errorHandler = require("./middlewares/handleError");
 const swaggerFile = require("../dist/swagger_output.json");
 const userRoute = require("./routes/user.route");
@@ -23,6 +24,7 @@ app.set("trust proxy", true);
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(cookieParser());
+app.use(apiLogger);
 
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/auth", authRoute);

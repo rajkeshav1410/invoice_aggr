@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import withErrorHandling from "../middlewares/handleAsync";
 import { WorkRequest } from "../models/work.model";
-import prisma from "../database";
+import prisma from "../common/database";
 import { Work } from "@prisma/client";
 
 const login = withErrorHandling(

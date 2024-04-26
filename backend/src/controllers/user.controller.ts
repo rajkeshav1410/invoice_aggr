@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import withErrorHandling from "../middlewares/handleAsync";
-import prisma from "../database";
+import prisma from "../common/database";
 
 const listUsers = withErrorHandling(
   async (req: Request, res: Response, next: NextFunction) => {
