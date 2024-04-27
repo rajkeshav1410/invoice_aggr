@@ -44,16 +44,24 @@ const createWork = async (req: Request, res: Response, next: NextFunction) => {
   res.status(StatusCodes.OK).send(newWork);
 };
 
-const getWorks = async (req: Request, res: Response, next: NextFunction) => {
-  res.status(StatusCodes.OK).send({});
-};
-
 const editWork = async (req: Request, res: Response, next: NextFunction) => {
   res.status(StatusCodes.OK).send({});
 };
 
 const deleteWork = async (req: Request, res: Response, next: NextFunction) => {
   res.status(StatusCodes.OK).send({});
+};
+
+const getWorks = async (req: Request, res: Response, next: NextFunction) => {
+  const usersWorkItems = await db.workItem.findMany({
+    where: {
+      userId: req.user.id,
+    },
+    include: {
+      work: true,
+    },
+  });
+  res.status(200).json(usersWorkItems);
 };
 
 export { createWork, getWorks, editWork, deleteWork };

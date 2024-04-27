@@ -1,6 +1,11 @@
 import { authenticate } from "../middlewares/auth.middleware";
 import withErrorHandling from "../middlewares/handleAsync";
-import { createWork, editWork, getWorks, deleteWork } from "../controllers/work.controller";
+import {
+  createWork,
+  editWork,
+  getWorks,
+  deleteWork,
+} from "../controllers/work.controller";
 
 const express = require("express");
 const router = express.Router();

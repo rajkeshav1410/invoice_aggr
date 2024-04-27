@@ -12,6 +12,7 @@ const adminRoute = require("./routes/admin.route");
 const userRoute = require("./routes/user.route");
 const authRoute = require("./routes/auth.route");
 const enterpriseRoute = require("./routes/enterprise.route");
+const legendRoute = require("./routes/legend.route");
 const workRoute = require("./routes/work.route");
 
 const app: Application = express();
@@ -34,6 +35,7 @@ app.use("/api/v1/admin", authenticate, isAdmin, adminRoute);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/enterprise", enterpriseRoute);
+app.use("/api/v1/legend", legendRoute);
 app.use("/api/v1/work", workRoute);
 
 app.use(errorHandler);
