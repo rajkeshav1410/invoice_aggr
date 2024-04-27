@@ -11,7 +11,8 @@ const logger = createLogger({
     )
   ),
   transports: [
-    new transports.Console(),
+    new transports.Console({
+    }),
     new transports.Stream({
       stream: createWriteStream("logs/log_stream.txt"),
     }),

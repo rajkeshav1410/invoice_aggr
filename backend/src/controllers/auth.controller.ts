@@ -3,90 +3,87 @@ import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "@prisma/client";
-import prisma from "../common/database";
+import db from "../common/database";
 import withErrorHandling from "../middlewares/handleAsync";
-import { LoginRequest, LoginRequestSchema, SignupRequest, SignupRequestSchema } from "../models/auth.model";
+import {
+  LoginRequest,
+  LoginRequestSchema,
+  SignupRequest,
+  SignupRequestSchema,
+} from "../models/auth.model";
 
-const login = withErrorHandling(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const loginRequest: LoginRequest = LoginRequestSchema.parse(req.body);
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        email: loginRequest.email,
-      },
+const login = async (req: Request, res: Response, next: NextFunction) => {
+  const loginRequest: LoginRequest = LoginRequestSchema.parse(req.body);
+  const existingUser = await db.user.findFirst({
+    where: {
+      email: loginRequest.email,
+    },
+  });
+
+  if (!existingUser)
+    return next({
+      message: `User with email ${loginRequest.email} doesn't exists`,
+      statusCode: StatusCodes.UNAUTHORIZED,
     });
 
-    if (!existingUser)
-      return next({
-        message: `User with email ${loginRequest.email} doesn't exists`,
-        statusCode: StatusCodes.UNAUTHORIZED,
-      });
-
-    const passwordMatch = await bcrypt.compare(
-      loginRequest.password,
-      existingUser.password
-    );
-    if (!passwordMatch)
-      return next({
-        message: "The password does not match",
-        statusCode: StatusCodes.UNAUTHORIZED,
-      });
-
-    createJwtToken(req, res, existingUser);
-  }
-);
-
-const signup = withErrorHandling(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const signupRequest: SignupRequest = SignupRequestSchema.parse(req.body);
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        email: signupRequest.email,
-      },
+  const passwordMatch = await bcrypt.compare(
+    loginRequest.password,
+    existingUser.password
+  );
+  if (!passwordMatch)
+    return next({
+      message: "The password does not match",
+      statusCode: StatusCodes.UNAUTHORIZED,
     });
 
-    if (existingUser)
-      return next({
-        message: `User with email ${signupRequest.email} already exists`,
-        statusCode: StatusCodes.FORBIDDEN,
-      });
+  createJwtToken(req, res, existingUser);
+};
 
-    const salt = await bcrypt.genSalt(10);
-    signupRequest.password = await bcrypt.hash(signupRequest.password, salt);
-    const { id, password, ...newUser } = await prisma.user.create({
-      data: {
-        ...signupRequest,
-      },
+const signup = async (req: Request, res: Response, next: NextFunction) => {
+  const signupRequest: SignupRequest = SignupRequestSchema.parse(req.body);
+  const existingUser = await db.user.findFirst({
+    where: {
+      email: signupRequest.email,
+    },
+  });
+
+  if (existingUser)
+    return next({
+      message: `User with email ${signupRequest.email} already exists`,
+      statusCode: StatusCodes.FORBIDDEN,
     });
 
-    res.status(StatusCodes.ACCEPTED).json(newUser);
-  }
-);
+  const salt = await bcrypt.genSalt(10);
+  signupRequest.password = await bcrypt.hash(signupRequest.password, salt);
+  const { id, password, ...newUser } = await db.user.create({
+    data: {
+      ...signupRequest,
+    },
+  });
 
-const me = withErrorHandling(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { id, password, ...currentUser } = req.user ? req.user : ({} as User);
-    res.status(StatusCodes.OK).json(currentUser);
-  }
-);
+  res.status(StatusCodes.ACCEPTED).json(newUser);
+};
 
-const logout = withErrorHandling(
-  async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user?.id)
-      return next({
-        message: "You must be logged in",
-        statusCode: StatusCodes.UNAUTHORIZED,
-      });
+const me = async (req: Request, res: Response, next: NextFunction) => {
+  const { id, password, ...currentUser } = req.user ? req.user : ({} as User);
+  res.status(StatusCodes.OK).json(currentUser);
+};
 
-    const currentUser = await prisma.user.findFirst({
-      where: {
-        id: req.user?.id,
-      },
+const logout = async (req: Request, res: Response, next: NextFunction) => {
+  if (!req.user?.id)
+    return next({
+      message: "You must be logged in",
+      statusCode: StatusCodes.UNAUTHORIZED,
     });
-    res.cookie("jwt", null, { expires: new Date(0) });
-    res.status(StatusCodes.OK).json(currentUser);
-  }
-);
+
+  const currentUser = await db.user.findFirst({
+    where: {
+      id: req.user?.id,
+    },
+  });
+  res.cookie("jwt", null, { expires: new Date(0) });
+  res.status(StatusCodes.OK).json(currentUser);
+};
 
 const createJwtToken = (req: Request, res: Response, user: User) => {
   const payload = {

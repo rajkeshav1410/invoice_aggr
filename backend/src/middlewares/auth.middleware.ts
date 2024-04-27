@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import jwt from "jsonwebtoken";
 import { JwtPayload } from "../models/auth.model";
-import prisma from "../common/database";
+import db from "../common/database";
 import { Role, User } from "@prisma/client";
 
 declare global {
@@ -41,7 +41,7 @@ const authenticate = async (
         statusCode: StatusCodes.BAD_REQUEST,
       });
 
-    const user = await prisma.user.findFirst({
+    const user = await db.user.findFirst({
       where: {
         id: decoded.id,
       },
@@ -66,7 +66,7 @@ const authenticate = async (
 };
 
 const isAdmin = async (req: Request, res: Response, next: NextFunction) => {
-  if (req.user && req.user.role == Role.ADMIN) {
+  if (req.user && req.user.role === Role.ADMIN) {
     next();
   } else {
     return next({

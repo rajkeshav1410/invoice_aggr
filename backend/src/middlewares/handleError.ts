@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { ErrorHandle } from "../models/error.model";
+import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { ZodError } from "zod";
+import { ErrorHandle } from "../models/error.model";
 import logger from "../common/logger";
-import { getReasonPhrase } from "http-status-codes";
 
 const errorHandler = (
   err: ErrorHandle,
@@ -10,23 +10,21 @@ const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  const message = err.message || "Internal Server Error";
-  let statusCode = err.statusCode || 500;
-  logger.error(`${statusCode} ${getReasonPhrase(statusCode)} | ${message}`);
+  let message = err.message || getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR);
+  let statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
 
   // Handle Zod validation errors
   if (err instanceof ZodError) {
-    statusCode = 400; // Bad Request status code for validation errors
-    const formattedErrors = err.errors
+    statusCode = StatusCodes.BAD_REQUEST; // Bad Request status code for validation errors
+    message = err.errors
       .map((error) => {
         return `${error.path.join(".")} ${error.message}`;
       })
       .join("; ");
-    return res
-      .status(statusCode)
-      .json({ success: false, message: formattedErrors });
   }
 
+
+  logger.error(`${statusCode} ${getReasonPhrase(statusCode)} | ${message}`);
   res.status(statusCode).json({ success: "false", message });
 };
 

@@ -1,12 +1,32 @@
 import { NextFunction, Request, Response } from "express";
 import withErrorHandling from "../middlewares/handleAsync";
-import prisma from "../common/database";
+import db from "../common/database";
 
-const listUsers = withErrorHandling(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const users = await prisma.user.findMany();
-    res.status(200).json(users);
-  }
-);
+const listUsers = async (req: Request, res: Response, next: NextFunction) => {
+  const users = await db.user.findMany();
+  res.status(200).json(users);
+};
 
-export { listUsers };
+const listUsersWork = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // const users = await db.user.findMany();
+  // res.status(200).json(users);
+  const usersWork = await db.user.findFirst({
+    where: {
+      id: req.user.id,
+    },
+    include: {
+      workItems: {
+        include: {
+          work: true,
+        }
+      }
+    },
+  });
+  res.status(200).json(usersWork?.workItems);
+};
+
+export { listUsers, listUsersWork };

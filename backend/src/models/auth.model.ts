@@ -1,13 +1,9 @@
 import { z } from "zod";
+import { RegexPatterns } from "../common/constants";
 
 const SignupRequestSchema = z.object({
   email: z.string().email(),
-  password: z
-    .string()
-    .min(6)
-    .regex(
-      /^(?=.*[A-Z])(?=.*[!@#$%^&*()-_=+\\|[\]{};:'",.<>/?])(?=.*[0-9]).{6,}$/
-    ),
+  password: z.string().min(6).regex(RegexPatterns.PASSWORD),
 });
 
 type SignupRequest = z.infer<typeof SignupRequestSchema>;
